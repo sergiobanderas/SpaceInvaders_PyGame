@@ -13,6 +13,7 @@ Juego en Python con Pygame. Punto de entrada: `main.py`.
 - `player.py`: clase `Player` (movimiento con flechas o WASD y dibujado).
 - `obstacle.py`: clase `Obstacle` (aparición aleatoria, caída y dibujado).
 - `powerup.py`: clase `PowerUp` (objetos especiales: velocidad, vida y escudo).
+- `scores.py`: lectura y guardado de récords en `scores.txt` (no versionado).
 
 ## Ejecución
 

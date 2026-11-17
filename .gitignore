@@ -5,3 +5,5 @@ venv/
 .vscode/
 .idea/
 .claude/
+# Local saved scores
+scores.txt

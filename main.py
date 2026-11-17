@@ -3,6 +3,7 @@ from config import *
 from player import Player
 from obstacle import Obstacle
 from powerup import PowerUp
+from scores import top_scores, save_score
 
 # Initialize Pygame
 pygame.init()
@@ -28,9 +29,12 @@ last_obstacle_spawn_time = 0  # Game time when the last obstacle was spawned
 last_powerup_spawn_time = 0  # Game time when the last power-up was spawned
 
 score = 0  # Initialize the score
-high_score = 0  # Best score reached while the program is running (kept across restarts)
+best_scores = top_scores()  # Top scores read from scores.txt when the game starts
+high_score = best_scores[0][1] if best_scores else 0  # Best score ever saved (kept across restarts)
 game_over = False  # Initialize the game over state
 paused = False  # Initialize the pause state
+entering_name = False  # True while the player types their name after a game over
+player_name = ""  # Name being typed
 
 survival_time = 0  # Seconds the players have survived
 
@@ -56,6 +60,17 @@ while running:
                 game_time = 0
                 last_obstacle_spawn_time = 0
                 last_powerup_spawn_time = 0
+        # Name entry after a game over: letters build the name, BACKSPACE deletes, ENTER saves
+        elif entering_name:
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+                    save_score(player_name.strip() or DEFAULT_PLAYER_NAME, score)
+                    best_scores = top_scores()  # Reload so the new score appears in the ranking
+                    entering_name = False
+                elif event.key == pygame.K_BACKSPACE:
+                    player_name = player_name[:-1]
+                elif event.unicode.isprintable() and event.unicode not in ("", ";") and len(player_name) < MAX_NAME_LENGTH:
+                    player_name += event.unicode  # ";" is not allowed because it separates name and score in the file
         # Toggle pause with ESC (only while the game is still running)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and not game_over:
             paused = not paused
@@ -132,6 +147,8 @@ while running:
         # The game ends when every active player has run out of lives
         if not any(p.is_alive() for p in active_players):
             game_over = True
+            entering_name = True  # Ask for the player's name before allowing a restart
+            player_name = ""
 
         # Remove obstacles that are off the screen
         visible_obstacles = []
@@ -158,6 +175,17 @@ while running:
         options_text = font.render("Press 1 or 2", True, (255, 255, 255))
         screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, HEIGHT // 2 - title_text.get_height()))
         screen.blit(options_text, (WIDTH // 2 - options_text.get_width() // 2, HEIGHT // 2 + 10))
+
+        # Best saved scores, from highest to lowest
+        ranking_y = HEIGHT // 2 + 70
+        ranking_title = font.render(f"TOP {TOP_SCORES_COUNT}", True, (255, 215, 0))
+        screen.blit(ranking_title, (WIDTH // 2 - ranking_title.get_width() // 2, ranking_y))
+        if not best_scores:
+            empty_text = small_font.render("No scores yet", True, (200, 200, 200))
+            screen.blit(empty_text, (WIDTH // 2 - empty_text.get_width() // 2, ranking_y + 40))
+        for position, (name, saved_score) in enumerate(best_scores, start=1):
+            entry_text = small_font.render(f"{position}. {name}  {saved_score}", True, (255, 255, 255))
+            screen.blit(entry_text, (WIDTH // 2 - entry_text.get_width() // 2, ranking_y + 10 + position * 28))
         pygame.display.flip()
         continue  # Skip the game drawing until the players are chosen
 
@@ -204,8 +232,16 @@ while running:
     if game_over:
         game_over_text = font.render("Game Over", True, (255, 0, 0))
         screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
-        restart_text = font.render("Press R to restart", True, (255, 255, 255))
-        screen.blit(restart_text, (WIDTH // 2 - restart_text.get_width() // 2, HEIGHT // 2 + game_over_text.get_height()))
+        if entering_name:
+            # Name input box with a blinking cursor
+            cursor = "_" if (pygame.time.get_ticks() // 500) % 2 == 0 else " "
+            name_text = font.render(f"Enter your name: {player_name}{cursor}", True, (255, 255, 255))
+            screen.blit(name_text, (WIDTH // 2 - name_text.get_width() // 2, HEIGHT // 2 + game_over_text.get_height()))
+            hint_text = small_font.render("Press ENTER to save", True, (200, 200, 200))
+            screen.blit(hint_text, (WIDTH // 2 - hint_text.get_width() // 2, HEIGHT // 2 + game_over_text.get_height() + 40))
+        else:
+            restart_text = font.render("Press R to restart", True, (255, 255, 255))
+            screen.blit(restart_text, (WIDTH // 2 - restart_text.get_width() // 2, HEIGHT // 2 + game_over_text.get_height()))
 
     # Display the pause message if the game is paused
     if paused:

@@ -18,7 +18,8 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 - **Tiempo de supervivencia** en segundos, que se congela en pausa y en Game Over.
 - **Dificultad progresiva**: cada 10 puntos los obstáculos aparecen 50 ms antes (mínimo 150 ms).
 - **Velocidad ajustable** del jugador 1 con + y − (entre 2 y 12).
-- **Récord de puntuación** (*High Score*) que se conserva entre partidas mientras el programa esté abierto.
+- **Récord de puntuación** (*High Score*) que se conserva entre partidas.
+- **Ranking guardado en `scores.txt`**: al terminar se pide el nombre y la pantalla inicial muestra el TOP 5.
 - **Sistema de vidas**: cada jugador tiene 3 vidas y 2 s de invulnerabilidad (parpadeo) tras cada impacto.
 - **Power-ups** cada 8 s: velocidad temporal (S), vida extra (L) o escudo de invulnerabilidad (I).
 - **Game Over** cuando todos los jugadores activos se quedan sin vidas.
@@ -34,6 +35,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 | `player.py`    | Clase `Player`: movimiento (flechas / WASD) y dibujado. |
 | `obstacle.py`  | Clase `Obstacle`: creación aleatoria, caída y dibujado. |
 | `powerup.py`   | Clase `PowerUp`: objetos especiales y sus efectos.      |
+| `scores.py`    | Lectura y guardado de récords en `scores.txt`.          |
 
 ## Requisitos e instalación
 
@@ -55,6 +57,7 @@ python main.py
 | Reiniciar (en Game Over) | R       | R         |
 | Velocidad + / −        | + / −     | —         |
 | Elegir jugadores (inicio) | 1 / 2  | —         |
+| Escribir nombre (fin)  | Teclado + ENTER | — |
 | Salir                  | Cerrar ventana | |
 
 ## Retos
@@ -196,3 +199,21 @@ Cada 8 segundos de juego cae un objeto especial (un círculo con una letra, para
 - **Los efectos temporales desaparecen solos**: cada fotograma se llama a `update_effects(game_time)`, que elimina el aumento de velocidad cuando pasa su duración; el escudo se compara directamente con `shield_until`. Como usan `game_time`, el tiempo de los efectos no corre durante la pausa.
 - El marcador muestra junto a las vidas los segundos que quedan de cada efecto (`SPEED 3s`, `SHIELD 2s`), y `Speed:` muestra la velocidad real incluyendo el aumento.
 - Al reiniciar se eliminan los power-ups de la pantalla y los efectos de los jugadores.
+
+### Reto 13 — Guardar récords en fichero
+
+Los récords se guardan en el archivo `scores.txt`. Al terminar cada partida se pide el nombre del jugador con una entrada de texto hecha en Pygame, y la pantalla inicial muestra las **5 mejores puntuaciones** de mayor a menor.
+
+- Nuevo módulo `scores.py`:
+  - `load_scores()` lee el fichero (una línea `nombre;puntos` por partida), ignora líneas mal formadas y devuelve la lista ordenada de mayor a menor con `sort(key=..., reverse=True)`.
+  - `top_scores()` devuelve las 5 primeras.
+  - `save_score(name, score)` añade una línea al final del fichero (modo `"a"`).
+  - La ruta se calcula a partir de la carpeta de `scores.py`, así el fichero se encuentra aunque el juego se lance desde otra carpeta.
+- Nuevas constantes en `config.py`: `SCORES_FILE`, `TOP_SCORES_COUNT`, `MAX_NAME_LENGTH` y `DEFAULT_PLAYER_NAME`.
+- **Entrada de texto en Pygame** (estado `entering_name` en `main.py`):
+  - Cada `KEYDOWN` añade `event.unicode` al nombre (máximo 12 caracteres; el `;` no se admite porque separa nombre y puntos en el fichero).
+  - BACKSPACE borra el último carácter y ENTER guarda la puntuación. Si el nombre está vacío se guarda como `Player`.
+  - Se dibuja un cursor parpadeante. Mientras se escribe, la tecla R escribe una "r" en lugar de reiniciar; el aviso *Press R to restart* aparece tras guardar.
+- Al iniciar el juego se lee el fichero y la pantalla de selección de jugadores muestra el **TOP 5**. Tras guardar se vuelve a leer, así que la nueva puntuación aparece en el ranking al volver a esa pantalla.
+- El **High Score** del Reto 9 se inicializa ahora con la mejor puntuación del fichero, de modo que se conserva también entre ejecuciones.
+- `scores.txt` se añade a `.gitignore`, ya que son datos locales de cada equipo.

@@ -32,3 +32,9 @@ SPAWN_OBSTACLE_DELAY = 500 #milliseconds
 POINTS_PER_DIFFICULTY_LEVEL = 10  # Every this many points the spawn rate increases
 SPAWN_DELAY_DECREASE = 50  # Milliseconds removed from the spawn delay per level
 MIN_SPAWN_OBSTACLE_DELAY = 150  # The spawn delay never goes below this value (milliseconds)
+
+# Saved high scores
+SCORES_FILE = "scores.txt"  # File where the scores are stored
+TOP_SCORES_COUNT = 5  # How many scores are shown on the start screen
+MAX_NAME_LENGTH = 12  # Maximum characters of a player name
+DEFAULT_PLAYER_NAME = "Player"  # Name saved when the player leaves it empty

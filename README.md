@@ -13,7 +13,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
   - Color y velocidad aleatorios.
   - Se eliminan al salir de la pantalla.
 - **Puntuación**: +1 por cada obstáculo esquivado que sale de la pantalla.
-- **Game Over** cuando el jugador 1 choca con un obstáculo.
+- **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
 
 ## Estructura
@@ -59,3 +59,10 @@ Cada obstáculo tiene ahora un tamaño aleatorio entre 20 y 70 píxeles.
 - Se añadieron las constantes `OBSTACLE_MIN_SIZE` y `OBSTACLE_MAX_SIZE` en `config.py`.
 - En `Obstacle.__init__()` el tamaño se calcula con `random.randint(OBSTACLE_MIN_SIZE, OBSTACLE_MAX_SIZE)`.
 - La posición horizontal se sigue eligiendo con `random.randint(0, WIDTH - size)`, que usa el tamaño real del obstáculo, así que siempre aparece completamente dentro del ancho de la ventana.
+
+### Reto 3 — Colisión del segundo jugador
+
+La partida termina ahora cuando un obstáculo golpea a **cualquiera** de los dos jugadores.
+
+- En el bucle de actualización de obstáculos de `main.py`, la condición de colisión pasa a ser `player.rect.colliderect(obstacle.rect) or player2.rect.colliderect(obstacle.rect)`.
+- Se actualizó la lista de características para reflejar el nuevo comportamiento.

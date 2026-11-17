@@ -40,7 +40,8 @@ while running:
         # Update the position of each obstacle
         for obstacle in obstacles:
             obstacle.move()
-            if player.rect.colliderect(obstacle.rect):
+            # The game ends if the obstacle hits either player
+            if player.rect.colliderect(obstacle.rect) or player2.rect.colliderect(obstacle.rect):
                 game_over = True
 
         # Remove obstacles that are off the screen

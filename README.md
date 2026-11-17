@@ -15,6 +15,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 - **Puntuación**: +1 por cada obstáculo esquivado que sale de la pantalla.
 - **Pausa** con la tecla ESC.
 - **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
+- **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
 
 ## Estructura
@@ -43,6 +44,7 @@ python main.py
 | Mover arriba/abajo     | ↑ / ↓     | W / S     |
 | Mover izquierda/derecha| ← / →     | A / D     |
 | Pausar / continuar     | ESC       | ESC       |
+| Reiniciar (en Game Over) | R       | R         |
 | Salir                  | Cerrar ventana | |
 
 ## Retos
@@ -77,3 +79,15 @@ Al pulsar **ESC** el juego se detiene y aparece el mensaje **PAUSE** en el centr
 - La lógica de actualización solo se ejecuta si `not game_over and not paused`, por lo que durante la pausa los jugadores no se mueven, los obstáculos no caen y no aparecen nuevos.
 - Se guarda el instante de inicio de la pausa (`pause_start_time`) y, al reanudar, se suma el tiempo pausado a `last_obstacle_spawn_time`. Así el temporizador de aparición no "cuenta" el tiempo en pausa y no surge un obstáculo justo al continuar.
 - El mensaje se dibuja tras el resto de elementos, de modo que el jugador sigue viendo la escena congelada.
+
+### Reto 5 — Reiniciar la partida
+
+Cuando aparece **Game Over**, se muestra el aviso *Press R to restart*. Al pulsar **R** empieza una nueva partida sin cerrar el programa.
+
+- `Player` guarda su posición inicial en `self.start_position` y tiene un nuevo método `reset_position()` que la restaura con `self.rect.topleft = self.start_position`.
+- En `main.py`, el evento `KEYDOWN` con `pygame.K_r` (solo si `game_over` es verdadero):
+  - pone la puntuación a cero,
+  - vacía la lista de obstáculos,
+  - devuelve a los dos jugadores a su posición inicial,
+  - reinicia el temporizador de aparición de obstáculos,
+  - y vuelve a poner `game_over = False`.

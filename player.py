@@ -8,6 +8,7 @@ class Player:
     def __init__(self, x, y, color=PLAYER_COLOR, speed=PLAYER_SPEED):
         """Initialize the player with a position and size"""
         self.rect = pygame.Rect(x, y, 50, 50)
+        self.start_position = (x, y)  # Remember the spawn point for restarts
         self.color = color
         self.speed = speed
 
@@ -40,6 +41,10 @@ class Player:
             self.rect.y += self.speed
 
         self.keep_inside_screen()
+
+    def reset_position(self):
+        """Move the player back to its initial position"""
+        self.rect.topleft = self.start_position
 
     def keep_inside_screen(self):
         """Clamp the player's rect so it never leaves the window"""

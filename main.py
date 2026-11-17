@@ -39,6 +39,14 @@ while running:
             else:
                 # Shift the spawn timer so the paused time does not count towards the next spawn
                 last_obstacle_spawn_time += pygame.time.get_ticks() - pause_start_time
+        # Restart the game with R after a game over
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and game_over:
+            score = 0
+            obstacles = []
+            player.reset_position()
+            player2.reset_position()
+            last_obstacle_spawn_time = pygame.time.get_ticks()
+            game_over = False
 
     if not game_over and not paused:
         #OBSTACLES spawning logic
@@ -84,6 +92,8 @@ while running:
     if game_over:
         game_over_text = font.render("Game Over", True, (255, 0, 0))
         screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+        restart_text = font.render("Press R to restart", True, (255, 255, 255))
+        screen.blit(restart_text, (WIDTH // 2 - restart_text.get_width() // 2, HEIGHT // 2 + game_over_text.get_height()))
 
     # Display the pause message if the game is paused
     if paused:

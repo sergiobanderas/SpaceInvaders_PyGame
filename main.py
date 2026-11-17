@@ -19,6 +19,8 @@ last_obstacle_spawn_time = pygame.time.get_ticks()  # Track the last time an obs
 
 score = 0  # Initialize the score
 game_over = False  # Initialize the game over state
+paused = False  # Initialize the pause state
+pause_start_time = 0  # Time when the current pause started
 
 font = pygame.font.Font(None, 36)   
 
@@ -29,8 +31,16 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # Toggle pause with ESC (only while the game is still running)
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and not game_over:
+            paused = not paused
+            if paused:
+                pause_start_time = pygame.time.get_ticks()
+            else:
+                # Shift the spawn timer so the paused time does not count towards the next spawn
+                last_obstacle_spawn_time += pygame.time.get_ticks() - pause_start_time
 
-    if not game_over:
+    if not game_over and not paused:
         #OBSTACLES spawning logic
         current_time = pygame.time.get_ticks()
         if current_time - last_obstacle_spawn_time > SPAWN_OBSTACLE_DELAY:
@@ -74,6 +84,11 @@ while running:
     if game_over:
         game_over_text = font.render("Game Over", True, (255, 0, 0))
         screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+
+    # Display the pause message if the game is paused
+    if paused:
+        pause_text = font.render("PAUSE", True, (255, 255, 255))
+        screen.blit(pause_text, (WIDTH // 2 - pause_text.get_width() // 2, HEIGHT // 2 - pause_text.get_height() // 2))
 
     pygame.display.flip()
     clock.tick(FPS)

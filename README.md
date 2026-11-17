@@ -13,6 +13,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
   - Color y velocidad aleatorios.
   - Se eliminan al salir de la pantalla.
 - **Puntuación**: +1 por cada obstáculo esquivado que sale de la pantalla.
+- **Pausa** con la tecla ESC.
 - **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
 
@@ -41,6 +42,7 @@ python main.py
 |------------------------|-----------|-----------|
 | Mover arriba/abajo     | ↑ / ↓     | W / S     |
 | Mover izquierda/derecha| ← / →     | A / D     |
+| Pausar / continuar     | ESC       | ESC       |
 | Salir                  | Cerrar ventana | |
 
 ## Retos
@@ -66,3 +68,12 @@ La partida termina ahora cuando un obstáculo golpea a **cualquiera** de los dos
 
 - En el bucle de actualización de obstáculos de `main.py`, la condición de colisión pasa a ser `player.rect.colliderect(obstacle.rect) or player2.rect.colliderect(obstacle.rect)`.
 - Se actualizó la lista de características para reflejar el nuevo comportamiento.
+
+### Reto 4 — Pausar el juego
+
+Al pulsar **ESC** el juego se detiene y aparece el mensaje **PAUSE** en el centro de la pantalla. Al pulsar ESC de nuevo, continúa.
+
+- Nueva variable `paused` en `main.py`, que se alterna en el evento `KEYDOWN` con `pygame.K_ESCAPE` (solo si la partida no ha terminado).
+- La lógica de actualización solo se ejecuta si `not game_over and not paused`, por lo que durante la pausa los jugadores no se mueven, los obstáculos no caen y no aparecen nuevos.
+- Se guarda el instante de inicio de la pausa (`pause_start_time`) y, al reanudar, se suma el tiempo pausado a `last_obstacle_spawn_time`. Así el temporizador de aparición no "cuenta" el tiempo en pausa y no surge un obstáculo justo al continuar.
+- El mensaje se dibuja tras el resto de elementos, de modo que el jugador sigue viendo la escena congelada.

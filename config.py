@@ -13,3 +13,8 @@ OBSTACLE_MAX_SIZE = 70  # Maximum obstacle size in pixels
 OBSTACLES_COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
 
 SPAWN_OBSTACLE_DELAY = 500 #milliseconds
+
+# Increasing difficulty
+POINTS_PER_DIFFICULTY_LEVEL = 10  # Every this many points the spawn rate increases
+SPAWN_DELAY_DECREASE = 50  # Milliseconds removed from the spawn delay per level
+MIN_SPAWN_OBSTACLE_DELAY = 150  # The spawn delay never goes below this value (milliseconds)

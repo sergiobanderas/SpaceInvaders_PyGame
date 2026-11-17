@@ -63,7 +63,11 @@ while running:
         # Survival timer: only updated while the game is running, so it freezes on pause and game over
         survival_time = (current_time - game_start_time) // 1000
 
-        if current_time - last_obstacle_spawn_time > SPAWN_OBSTACLE_DELAY:
+        # Increasing difficulty: every POINTS_PER_DIFFICULTY_LEVEL points the delay drops, down to a minimum
+        difficulty_level = score // POINTS_PER_DIFFICULTY_LEVEL
+        spawn_delay = max(MIN_SPAWN_OBSTACLE_DELAY, SPAWN_OBSTACLE_DELAY - difficulty_level * SPAWN_DELAY_DECREASE)
+
+        if current_time - last_obstacle_spawn_time > spawn_delay:
             obstacles.append(Obstacle())
             last_obstacle_spawn_time = current_time
 

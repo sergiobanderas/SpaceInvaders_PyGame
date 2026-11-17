@@ -9,12 +9,13 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
   - Jugador 1 (azul): se mueve con las **flechas**.
   - Jugador 2 (naranja): se mueve con **W A S D** (más lento).
 - **Obstáculos** que caen desde la parte superior:
-  - Aparecen cada 500 ms en una posición horizontal aleatoria.
+  - Aparecen inicialmente cada 500 ms en una posición horizontal aleatoria.
   - Color y velocidad aleatorios.
   - Se eliminan al salir de la pantalla.
 - **Puntuación**: +1 por cada obstáculo esquivado que sale de la pantalla.
 - **Pausa** con la tecla ESC.
 - **Tiempo de supervivencia** en segundos, que se congela en pausa y en Game Over.
+- **Dificultad progresiva**: cada 10 puntos los obstáculos aparecen 50 ms antes (mínimo 150 ms).
 - **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
 - **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
@@ -101,3 +102,22 @@ Debajo de la puntuación se muestra `Time: Ns`, los segundos que llevan sobreviv
 - `survival_time = (current_time - game_start_time) // 1000` se calcula **solo dentro del bloque de actualización** (`not game_over and not paused`), así que el valor mostrado se congela automáticamente en Game Over.
 - Al salir de la pausa, el tiempo pausado se suma también a `game_start_time`, de modo que el contador continúa donde se quedó en lugar de saltar.
 - Al reiniciar con R, `game_start_time` vuelve al instante actual y `survival_time` a cero.
+
+### Reto 7 — Dificultad progresiva
+
+Cada 10 puntos los obstáculos aparecen con más frecuencia: el intervalo de aparición se reduce 50 ms por nivel, sin bajar nunca de 150 ms.
+
+| Puntos  | Intervalo |
+|---------|-----------|
+| 0–9     | 500 ms    |
+| 10–19   | 450 ms    |
+| 20–29   | 400 ms    |
+| …       | …         |
+| 70 o más| 150 ms    |
+
+- Nuevas constantes en `config.py`: `POINTS_PER_DIFFICULTY_LEVEL = 10`, `SPAWN_DELAY_DECREASE = 50` y `MIN_SPAWN_OBSTACLE_DELAY = 150`.
+- En cada fotograma, `main.py` calcula:
+  - `difficulty_level = score // POINTS_PER_DIFFICULTY_LEVEL`
+  - `spawn_delay = max(MIN_SPAWN_OBSTACLE_DELAY, SPAWN_OBSTACLE_DELAY - difficulty_level * SPAWN_DELAY_DECREASE)`
+- `max()` garantiza el límite inferior de 150 ms.
+- Como el intervalo se deriva directamente de la puntuación, al reiniciar con R (puntuación a cero) la dificultad vuelve sola al nivel inicial.

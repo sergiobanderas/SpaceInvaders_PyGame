@@ -24,6 +24,8 @@ class Player:
         if keys[pygame.K_DOWN]:
             self.rect.y += self.speed
 
+        self.keep_inside_screen()
+
     def moveWASD(self):
         """Update the player's position based on WASD keyboard input"""
         keys = pygame.key.get_pressed()  # Get the state of all keyboard buttons
@@ -36,6 +38,12 @@ class Player:
             self.rect.y -= self.speed
         if keys[pygame.K_s]:
             self.rect.y += self.speed
+
+        self.keep_inside_screen()
+
+    def keep_inside_screen(self):
+        """Clamp the player's rect so it never leaves the window"""
+        self.rect.clamp_ip(pygame.Rect(0, 0, WIDTH, HEIGHT))
 
     def draw(self, surface):
         """Draw the player on the given surface"""

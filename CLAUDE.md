@@ -25,3 +25,8 @@ python main.py
 - Seguir PEP 8 en el código nuevo.
 - Las constantes configurables van en `config.py`.
 - Cada clase del juego en su propio módulo.
+
+## Flujo de trabajo: retos
+
+- Cada reto se implementa en **un único commit**.
+- Cada reto añade su propia subsección `### Reto N — <título>` en la sección `## Retos` del `README.md`, explicando qué se ha hecho y cómo.

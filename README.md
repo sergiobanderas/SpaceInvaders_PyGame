@@ -42,3 +42,12 @@ python main.py
 | Mover arriba/abajo     | ↑ / ↓     | W / S     |
 | Mover izquierda/derecha| ← / →     | A / D     |
 | Salir                  | Cerrar ventana | |
+
+## Retos
+
+### Reto 1 — Límites de pantalla
+
+Los dos jugadores ya no pueden salir de la ventana por ninguno de los cuatro lados.
+
+- Se añadió el método `Player.keep_inside_screen()`, que usa `self.rect.clamp_ip(pygame.Rect(0, 0, WIDTH, HEIGHT))` para recolocar el rectángulo del jugador dentro de la pantalla.
+- Se llama al final de `moveArrows()` y de `moveWASD()`, así que funciona para ambos jugadores.

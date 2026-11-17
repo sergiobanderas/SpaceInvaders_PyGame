@@ -22,6 +22,9 @@ game_over = False  # Initialize the game over state
 paused = False  # Initialize the pause state
 pause_start_time = 0  # Time when the current pause started
 
+game_start_time = pygame.time.get_ticks()  # Time when the current game started
+survival_time = 0  # Seconds the players have survived
+
 font = pygame.font.Font(None, 36)   
 
 # GAME LOOP
@@ -38,7 +41,10 @@ while running:
                 pause_start_time = pygame.time.get_ticks()
             else:
                 # Shift the spawn timer so the paused time does not count towards the next spawn
-                last_obstacle_spawn_time += pygame.time.get_ticks() - pause_start_time
+                paused_duration = pygame.time.get_ticks() - pause_start_time
+                last_obstacle_spawn_time += paused_duration
+                # Shift the game start time too, so the survival timer ignores the pause
+                game_start_time += paused_duration
         # Restart the game with R after a game over
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and game_over:
             score = 0
@@ -46,11 +52,17 @@ while running:
             player.reset_position()
             player2.reset_position()
             last_obstacle_spawn_time = pygame.time.get_ticks()
+            game_start_time = pygame.time.get_ticks()
+            survival_time = 0
             game_over = False
 
     if not game_over and not paused:
         #OBSTACLES spawning logic
         current_time = pygame.time.get_ticks()
+
+        # Survival timer: only updated while the game is running, so it freezes on pause and game over
+        survival_time = (current_time - game_start_time) // 1000
+
         if current_time - last_obstacle_spawn_time > SPAWN_OBSTACLE_DELAY:
             obstacles.append(Obstacle())
             last_obstacle_spawn_time = current_time
@@ -87,6 +99,10 @@ while running:
     
     score_text = font.render(f"Score: {score}", True, (255, 255, 255))
     screen.blit(score_text, (10, 10))
+
+    # Display the survival time
+    time_text = font.render(f"Time: {survival_time}s", True, (255, 255, 255))
+    screen.blit(time_text, (10, 40))
 
     # Display the game over message if the game is over
     if game_over:

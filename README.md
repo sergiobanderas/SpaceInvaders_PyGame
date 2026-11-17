@@ -14,6 +14,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
   - Se eliminan al salir de la pantalla.
 - **Puntuación**: +1 por cada obstáculo esquivado que sale de la pantalla.
 - **Pausa** con la tecla ESC.
+- **Tiempo de supervivencia** en segundos, que se congela en pausa y en Game Over.
 - **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
 - **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
@@ -91,3 +92,12 @@ Cuando aparece **Game Over**, se muestra el aviso *Press R to restart*. Al pulsa
   - devuelve a los dos jugadores a su posición inicial,
   - reinicia el temporizador de aparición de obstáculos,
   - y vuelve a poner `game_over = False`.
+
+### Reto 6 — Tiempo de supervivencia
+
+Debajo de la puntuación se muestra `Time: Ns`, los segundos que llevan sobreviviendo los jugadores.
+
+- Nueva variable `game_start_time`, con el instante (`pygame.time.get_ticks()`) en que empezó la partida.
+- `survival_time = (current_time - game_start_time) // 1000` se calcula **solo dentro del bloque de actualización** (`not game_over and not paused`), así que el valor mostrado se congela automáticamente en Game Over.
+- Al salir de la pausa, el tiempo pausado se suma también a `game_start_time`, de modo que el contador continúa donde se quedó en lugar de saltar.
+- Al reiniciar con R, `game_start_time` vuelve al instante actual y `survival_time` a cero.

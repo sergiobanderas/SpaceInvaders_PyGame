@@ -45,11 +45,18 @@ while running:
                 last_obstacle_spawn_time += paused_duration
                 # Shift the game start time too, so the survival timer ignores the pause
                 game_start_time += paused_duration
+        # Change player 1 speed with + and - (KEYDOWN fires once per press)
+        elif event.type == pygame.KEYDOWN and not game_over and not paused:
+            if event.key in (pygame.K_PLUS, pygame.K_KP_PLUS) or event.unicode == "+":
+                player.change_speed(PLAYER_SPEED_STEP)
+            elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS) or event.unicode == "-":
+                player.change_speed(-PLAYER_SPEED_STEP)
         # Restart the game with R after a game over
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and game_over:
             score = 0
             obstacles = []
             player.reset_position()
+            player.reset_speed()
             player2.reset_position()
             last_obstacle_spawn_time = pygame.time.get_ticks()
             game_start_time = pygame.time.get_ticks()
@@ -107,6 +114,10 @@ while running:
     # Display the survival time
     time_text = font.render(f"Time: {survival_time}s", True, (255, 255, 255))
     screen.blit(time_text, (10, 40))
+
+    # Display player 1 speed
+    speed_text = font.render(f"Speed: {player.speed}", True, (255, 255, 255))
+    screen.blit(speed_text, (10, 70))
 
     # Display the game over message if the game is over
     if game_over:

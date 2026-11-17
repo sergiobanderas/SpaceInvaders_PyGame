@@ -16,6 +16,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 - **Pausa** con la tecla ESC.
 - **Tiempo de supervivencia** en segundos, que se congela en pausa y en Game Over.
 - **Dificultad progresiva**: cada 10 puntos los obstáculos aparecen 50 ms antes (mínimo 150 ms).
+- **Velocidad ajustable** del jugador 1 con + y − (entre 2 y 12).
 - **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
 - **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
@@ -47,6 +48,7 @@ python main.py
 | Mover izquierda/derecha| ← / →     | A / D     |
 | Pausar / continuar     | ESC       | ESC       |
 | Reiniciar (en Game Over) | R       | R         |
+| Velocidad + / −        | + / −     | —         |
 | Salir                  | Cerrar ventana | |
 
 ## Retos
@@ -121,3 +123,14 @@ Cada 10 puntos los obstáculos aparecen con más frecuencia: el intervalo de apa
   - `spawn_delay = max(MIN_SPAWN_OBSTACLE_DELAY, SPAWN_OBSTACLE_DELAY - difficulty_level * SPAWN_DELAY_DECREASE)`
 - `max()` garantiza el límite inferior de 150 ms.
 - Como el intervalo se deriva directamente de la puntuación, al reiniciar con R (puntuación a cero) la dificultad vuelve sola al nivel inicial.
+
+### Reto 8 — Cambiar velocidad
+
+El jugador 1 aumenta su velocidad con **+** y la reduce con **−**, siempre entre 2 y 12. La velocidad actual se muestra en pantalla como `Speed: N`.
+
+- Nuevas constantes en `config.py`: `PLAYER_MIN_SPEED = 2`, `PLAYER_MAX_SPEED = 12` y `PLAYER_SPEED_STEP = 1`.
+- Nuevo método `Player.change_speed(amount)`, que limita el resultado con `max(PLAYER_MIN_SPEED, min(PLAYER_MAX_SPEED, self.speed + amount))`.
+- En `main.py` se usa el evento `KEYDOWN`, que se dispara **una sola vez por pulsación** (a diferencia de `key.get_pressed()`, que seguiría sumando mientras la tecla esté mantenida).
+- Se aceptan `K_PLUS`/`K_MINUS`, las teclas del teclado numérico (`K_KP_PLUS`/`K_KP_MINUS`) y también el carácter escrito (`event.unicode`), para que funcione con distintas distribuciones de teclado.
+- Solo se puede cambiar mientras se juega (no en pausa ni en Game Over).
+- Al reiniciar con R, `Player.reset_speed()` devuelve al jugador su velocidad inicial.

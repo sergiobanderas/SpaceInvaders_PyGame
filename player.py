@@ -11,6 +11,7 @@ class Player:
         self.start_position = (x, y)  # Remember the spawn point for restarts
         self.color = color
         self.speed = speed
+        self.start_speed = speed  # Remember the initial speed for restarts
 
     def moveArrows(self):
         """Update the player's position based on keyboard input"""
@@ -45,6 +46,14 @@ class Player:
     def reset_position(self):
         """Move the player back to its initial position"""
         self.rect.topleft = self.start_position
+
+    def change_speed(self, amount):
+        """Change the speed by the given amount, keeping it between the min and max limits"""
+        self.speed = max(PLAYER_MIN_SPEED, min(PLAYER_MAX_SPEED, self.speed + amount))
+
+    def reset_speed(self):
+        """Restore the player's initial speed"""
+        self.speed = self.start_speed
 
     def keep_inside_screen(self):
         """Clamp the player's rect so it never leaves the window"""

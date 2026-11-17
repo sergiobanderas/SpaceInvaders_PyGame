@@ -7,7 +7,7 @@ class Obstacle:
     """An obstacle that the player must avoid"""
 
     def __init__(self):
-        size = 40
+        size = random.randint(OBSTACLE_MIN_SIZE, OBSTACLE_MAX_SIZE)  # Random size in pixels
         x = random.randint(0, WIDTH - size)
         self.rect = pygame.Rect(x, -size , size, size)
         self.color = random.choice(OBSTACLES_COLORS)  # Random color for the obstacle

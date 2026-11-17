@@ -51,3 +51,11 @@ Los dos jugadores ya no pueden salir de la ventana por ninguno de los cuatro lad
 
 - Se añadió el método `Player.keep_inside_screen()`, que usa `self.rect.clamp_ip(pygame.Rect(0, 0, WIDTH, HEIGHT))` para recolocar el rectángulo del jugador dentro de la pantalla.
 - Se llama al final de `moveArrows()` y de `moveWASD()`, así que funciona para ambos jugadores.
+
+### Reto 2 — Tamaños aleatorios
+
+Cada obstáculo tiene ahora un tamaño aleatorio entre 20 y 70 píxeles.
+
+- Se añadieron las constantes `OBSTACLE_MIN_SIZE` y `OBSTACLE_MAX_SIZE` en `config.py`.
+- En `Obstacle.__init__()` el tamaño se calcula con `random.randint(OBSTACLE_MIN_SIZE, OBSTACLE_MAX_SIZE)`.
+- La posición horizontal se sigue eligiendo con `random.randint(0, WIDTH - size)`, que usa el tamaño real del obstáculo, así que siempre aparece completamente dentro del ancho de la ventana.

@@ -19,7 +19,8 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 - **Dificultad progresiva**: cada 10 puntos los obstáculos aparecen 50 ms antes (mínimo 150 ms).
 - **Velocidad ajustable** del jugador 1 con + y − (entre 2 y 12).
 - **Récord de puntuación** (*High Score*) que se conserva entre partidas mientras el programa esté abierto.
-- **Game Over** cuando cualquier jugador activo choca con un obstáculo.
+- **Sistema de vidas**: cada jugador tiene 3 vidas y 2 s de invulnerabilidad (parpadeo) tras cada impacto.
+- **Game Over** cuando todos los jugadores activos se quedan sin vidas.
 - **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
 
@@ -160,3 +161,16 @@ Al arrancar, el juego muestra la pantalla *Number of players? — Press 1 or 2*.
 - Las colisiones, el dibujado y el reinicio recorren `active_players`, y `player2.moveWASD()` solo se llama si hay dos jugadores. Así, en modo de un jugador, el jugador 2 ni se ve ni puede chocar.
 - La pantalla de selección hace `continue` tras dibujarse, de modo que no se muestra el HUD hasta que empieza la partida.
 - Al reiniciar con R se vuelve a la pantalla de selección, de modo que se puede cambiar el número de jugadores en cada partida.
+
+### Reto 11 — Sistema de vidas
+
+Cada jugador empieza con **3 vidas**. Un impacto le quita una vida en lugar de terminar la partida, y después tiene **2 segundos de invulnerabilidad** (el jugador parpadea) para no perder varias vidas con la misma colisión. La partida termina cuando **todos** los jugadores activos se quedan sin vidas; el jugador que se queda sin vidas desaparece mientras el otro sigue jugando.
+
+- Nuevas constantes en `config.py`: `PLAYER_LIVES = 3`, `INVULNERABILITY_TIME = 2000` y `BLINK_INTERVAL = 100`.
+- Nuevos atributos y métodos en `Player`:
+  - `lives` e `invulnerable_until` (instante de juego hasta el que no recibe daño).
+  - `is_alive()`, `is_invulnerable(now)`, `take_hit(now)` (resta una vida solo si no es invulnerable) y `reset_lives()`.
+  - `draw(surface, now)` se salta el dibujado en intervalos alternos mientras es invulnerable, creando el parpadeo.
+- En `main.py`, solo los jugadores vivos se mueven, se dibujan y pueden chocar. El marcador muestra `P1 Lives` / `P2 Lives` en el color de cada jugador.
+- **Reloj de juego (`game_time`)**: se sustituye `pygame.time.get_ticks()` por un contador propio que suma el `dt` de `clock.tick(FPS)` **solo mientras se está jugando**. Así la invulnerabilidad, la aparición de obstáculos y el tiempo de supervivencia se detienen solos en pausa, menú y Game Over, y ya no hace falta desplazar cada temporizador al reanudar (simplifica lo hecho en los retos 4 y 6).
+- Al reiniciar con R se restauran las vidas de ambos jugadores.

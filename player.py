@@ -12,6 +12,8 @@ class Player:
         self.color = color
         self.speed = speed
         self.start_speed = speed  # Remember the initial speed for restarts
+        self.lives = PLAYER_LIVES
+        self.invulnerable_until = 0  # Game time (ms) until which the player cannot be hurt
 
     def moveArrows(self):
         """Update the player's position based on keyboard input"""
@@ -55,10 +57,33 @@ class Player:
         """Restore the player's initial speed"""
         self.speed = self.start_speed
 
+    def is_alive(self):
+        """Return True while the player still has lives left"""
+        return self.lives > 0
+
+    def is_invulnerable(self, now):
+        """Return True if the player cannot be hurt at the given game time"""
+        return now < self.invulnerable_until
+
+    def take_hit(self, now):
+        """Lose a life unless invulnerable. Returns True if a life was lost"""
+        if self.is_invulnerable(now):
+            return False
+        self.lives -= 1
+        self.invulnerable_until = now + INVULNERABILITY_TIME
+        return True
+
+    def reset_lives(self):
+        """Restore the initial lives and remove any invulnerability"""
+        self.lives = PLAYER_LIVES
+        self.invulnerable_until = 0
+
     def keep_inside_screen(self):
         """Clamp the player's rect so it never leaves the window"""
         self.rect.clamp_ip(pygame.Rect(0, 0, WIDTH, HEIGHT))
 
-    def draw(self, surface):
-        """Draw the player on the given surface"""
+    def draw(self, surface, now=0):
+        """Draw the player on the given surface, blinking while invulnerable"""
+        if self.is_invulnerable(now) and (now // BLINK_INTERVAL) % 2 == 0:
+            return  # Skip drawing on alternate intervals to create a blink effect
         pygame.draw.rect(surface, self.color, self.rect)

@@ -9,6 +9,9 @@ PLAYER_SPEED = 6  # Speed of the player movement
 PLAYER_MIN_SPEED = 2  # Minimum speed reachable with the - key
 PLAYER_MAX_SPEED = 12  # Maximum speed reachable with the + key
 PLAYER_SPEED_STEP = 1  # Speed change per key press
+PLAYER_LIVES = 3  # Lives each player starts with
+INVULNERABILITY_TIME = 2000  # Milliseconds of invulnerability after being hit
+BLINK_INTERVAL = 100  # Milliseconds between blinks while invulnerable
 
 OBSTACLE_MIN_SIZE = 20  # Minimum obstacle size in pixels
 OBSTACLE_MAX_SIZE = 70  # Maximum obstacle size in pixels

@@ -5,7 +5,8 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 ## Características
 
 - Ventana de 800×600 a 60 FPS.
-- **Dos jugadores** en el mismo teclado:
+- **Pantalla inicial** para elegir **1 o 2 jugadores**.
+- Hasta **dos jugadores** en el mismo teclado:
   - Jugador 1 (azul): se mueve con las **flechas**.
   - Jugador 2 (naranja): se mueve con **W A S D** (más lento).
 - **Obstáculos** que caen desde la parte superior:
@@ -18,7 +19,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 - **Dificultad progresiva**: cada 10 puntos los obstáculos aparecen 50 ms antes (mínimo 150 ms).
 - **Velocidad ajustable** del jugador 1 con + y − (entre 2 y 12).
 - **Récord de puntuación** (*High Score*) que se conserva entre partidas mientras el programa esté abierto.
-- **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
+- **Game Over** cuando cualquier jugador activo choca con un obstáculo.
 - **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
 
@@ -50,6 +51,7 @@ python main.py
 | Pausar / continuar     | ESC       | ESC       |
 | Reiniciar (en Game Over) | R       | R         |
 | Velocidad + / −        | + / −     | —         |
+| Elegir jugadores (inicio) | 1 / 2  | —         |
 | Salir                  | Cerrar ventana | |
 
 ## Retos
@@ -144,3 +146,17 @@ Junto a la puntuación actual se muestra el récord: `Score: N    High Score: M`
 - Cada vez que la puntuación sube, se actualiza con `high_score = max(high_score, score)`.
 - El reinicio con R pone `score` a cero pero **no** toca `high_score`, así que el récord se conserva entre partidas.
 - El récord vive en memoria: se pierde al cerrar el programa.
+
+### Reto 10 — Elegir número de jugadores al empezar
+
+Al arrancar, el juego muestra la pantalla *Number of players? — Press 1 or 2*. Solo se aceptan las teclas **1** y **2**; según la elección aparecen uno o dos jugadores.
+
+- Nuevas variables en `main.py`:
+  - `selecting_players`: indica si estamos en la pantalla de selección.
+  - `num_players`: número de jugadores elegido.
+  - `active_players`: lista con los jugadores que participan (`[player]` o `[player, player2]`).
+- Mientras `selecting_players` es verdadero, solo se procesan las teclas 1/2 (se comprueba `event.unicode`, así funcionan tanto la fila de números como el teclado numérico). No funcionan la pausa ni el cambio de velocidad.
+- Al elegir, se ponen en marcha los temporizadores de aparición y de supervivencia, para que el tiempo pasado en el menú no cuente.
+- Las colisiones, el dibujado y el reinicio recorren `active_players`, y `player2.moveWASD()` solo se llama si hay dos jugadores. Así, en modo de un jugador, el jugador 2 ni se ve ni puede chocar.
+- La pantalla de selección hace `continue` tras dibujarse, de modo que no se muestra el HUD hasta que empieza la partida.
+- Al reiniciar con R se mantiene el número de jugadores elegido.

@@ -13,6 +13,10 @@ clock = pygame.time.Clock()
 player = Player(375, 530)
 player2 = Player(100, 100, PLAYER_COLOR2,2)  # Create a second player object
 
+selecting_players = True  # The game starts on the player count selection screen
+num_players = 1  # Number of players chosen in the selection screen (1 or 2)
+active_players = []  # Players taking part in the current game
+
 obstacles = [] # List to store obstacles
 
 last_obstacle_spawn_time = pygame.time.get_ticks()  # Track the last time an obstacle was spawned
@@ -35,6 +39,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # Player count selection screen: only the 1 and 2 keys are accepted
+        elif selecting_players:
+            if event.type == pygame.KEYDOWN and event.unicode in ("1", "2"):
+                num_players = int(event.unicode)
+                active_players = [player, player2] if num_players == 2 else [player]
+                selecting_players = False
+                # Start the timers when the game really begins, not when the program opens
+                last_obstacle_spawn_time = pygame.time.get_ticks()
+                game_start_time = pygame.time.get_ticks()
         # Toggle pause with ESC (only while the game is still running)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and not game_over:
             paused = not paused
@@ -56,15 +69,15 @@ while running:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and game_over:
             score = 0
             obstacles = []
-            player.reset_position()
+            for active_player in active_players:
+                active_player.reset_position()
             player.reset_speed()
-            player2.reset_position()
             last_obstacle_spawn_time = pygame.time.get_ticks()
             game_start_time = pygame.time.get_ticks()
             survival_time = 0
             game_over = False
 
-    if not game_over and not paused:
+    if not selecting_players and not game_over and not paused:
         #OBSTACLES spawning logic
         current_time = pygame.time.get_ticks()
 
@@ -82,9 +95,10 @@ while running:
         # Update the position of each obstacle
         for obstacle in obstacles:
             obstacle.move()
-            # The game ends if the obstacle hits either player
-            if player.rect.colliderect(obstacle.rect) or player2.rect.colliderect(obstacle.rect):
-                game_over = True
+            # The game ends if the obstacle hits any active player
+            for active_player in active_players:
+                if active_player.rect.colliderect(obstacle.rect):
+                    game_over = True
 
         # Remove obstacles that are off the screen
         visible_obstacles = []
@@ -99,12 +113,24 @@ while running:
 
         # Update the player's position
         player.moveArrows()
-        player2.moveWASD()  # Update the second player's position
+        if num_players == 2:
+            player2.moveWASD()  # Update the second player's position
 
     screen.fill(BACKGROUND_COLOR)  # Blue background
-    player.draw(screen)  # Draw the player rectangle
-    player2.draw(screen)  # Draw the second player rectangle
-    
+
+    # Player count selection screen
+    if selecting_players:
+        title_text = font.render("Number of players?", True, (255, 255, 255))
+        options_text = font.render("Press 1 or 2", True, (255, 255, 255))
+        screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, HEIGHT // 2 - title_text.get_height()))
+        screen.blit(options_text, (WIDTH // 2 - options_text.get_width() // 2, HEIGHT // 2 + 10))
+        pygame.display.flip()
+        clock.tick(FPS)
+        continue  # Skip the game drawing until the players are chosen
+
+    for active_player in active_players:
+        active_player.draw(screen)  # Draw each active player
+
     for obstacle in obstacles:
         obstacle.draw(screen)  # Draw each obstacle
 

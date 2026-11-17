@@ -14,19 +14,22 @@ class Player:
         self.start_speed = speed  # Remember the initial speed for restarts
         self.lives = PLAYER_LIVES
         self.invulnerable_until = 0  # Game time (ms) until which the player cannot be hurt
+        self.shield_until = 0  # Game time (ms) until which the shield power-up protects the player
+        self.speed_boost = 0  # Extra speed from the speed power-up
+        self.speed_boost_until = 0  # Game time (ms) when the speed boost ends
 
     def moveArrows(self):
         """Update the player's position based on keyboard input"""
         keys = pygame.key.get_pressed()  # Get the state of all keyboard buttons
 
         if keys[pygame.K_LEFT]:
-            self.rect.x -= self.speed
+            self.rect.x -= self.current_speed()
         if keys[pygame.K_RIGHT]:
-            self.rect.x += self.speed
+            self.rect.x += self.current_speed()
         if keys[pygame.K_UP]:
-            self.rect.y -= self.speed
+            self.rect.y -= self.current_speed()
         if keys[pygame.K_DOWN]:
-            self.rect.y += self.speed
+            self.rect.y += self.current_speed()
 
         self.keep_inside_screen()
 
@@ -35,13 +38,13 @@ class Player:
         keys = pygame.key.get_pressed()  # Get the state of all keyboard buttons
 
         if keys[pygame.K_a]:
-            self.rect.x -= self.speed
+            self.rect.x -= self.current_speed()
         if keys[pygame.K_d]:
-            self.rect.x += self.speed
+            self.rect.x += self.current_speed()
         if keys[pygame.K_w]:
-            self.rect.y -= self.speed
+            self.rect.y -= self.current_speed()
         if keys[pygame.K_s]:
-            self.rect.y += self.speed
+            self.rect.y += self.current_speed()
 
         self.keep_inside_screen()
 
@@ -63,7 +66,40 @@ class Player:
 
     def is_invulnerable(self, now):
         """Return True if the player cannot be hurt at the given game time"""
-        return now < self.invulnerable_until
+        return now < self.invulnerable_until or self.has_shield(now)
+
+    def has_shield(self, now):
+        """Return True while the shield power-up is active"""
+        return now < self.shield_until
+
+    def current_speed(self):
+        """Base speed plus any temporary boost"""
+        return self.speed + self.speed_boost
+
+    def activate_speed_boost(self, now):
+        """Temporarily increase the speed (speed power-up)"""
+        self.speed_boost = SPEED_BOOST_AMOUNT
+        self.speed_boost_until = now + POWERUP_DURATION
+
+    def activate_shield(self, now):
+        """Temporarily make the player invulnerable (shield power-up)"""
+        self.shield_until = now + POWERUP_DURATION
+
+    def add_life(self):
+        """Recover one life, never going above the maximum (life power-up)"""
+        self.lives = min(PLAYER_MAX_LIVES, self.lives + 1)
+
+    def update_effects(self, now):
+        """Remove temporary effects whose duration has finished"""
+        if self.speed_boost and now >= self.speed_boost_until:
+            self.speed_boost = 0
+        # The shield needs no cleanup: has_shield() compares against shield_until every frame
+
+    def reset_effects(self):
+        """Remove every power-up effect"""
+        self.speed_boost = 0
+        self.speed_boost_until = 0
+        self.shield_until = 0
 
     def take_hit(self, now):
         """Lose a life unless invulnerable. Returns True if a life was lost"""
@@ -84,6 +120,9 @@ class Player:
 
     def draw(self, surface, now=0):
         """Draw the player on the given surface, blinking while invulnerable"""
-        if self.is_invulnerable(now) and (now // BLINK_INTERVAL) % 2 == 0:
+        # Blink only for the post-hit invulnerability; the shield is shown with an outline instead
+        if now < self.invulnerable_until and (now // BLINK_INTERVAL) % 2 == 0:
             return  # Skip drawing on alternate intervals to create a blink effect
         pygame.draw.rect(surface, self.color, self.rect)
+        if self.has_shield(now):
+            pygame.draw.rect(surface, (255, 255, 255), self.rect.inflate(12, 12), 3)

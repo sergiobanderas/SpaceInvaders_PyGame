@@ -20,6 +20,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 - **Velocidad ajustable** del jugador 1 con + y − (entre 2 y 12).
 - **Récord de puntuación** (*High Score*) que se conserva entre partidas mientras el programa esté abierto.
 - **Sistema de vidas**: cada jugador tiene 3 vidas y 2 s de invulnerabilidad (parpadeo) tras cada impacto.
+- **Power-ups** cada 8 s: velocidad temporal (S), vida extra (L) o escudo de invulnerabilidad (I).
 - **Game Over** cuando todos los jugadores activos se quedan sin vidas.
 - **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
@@ -32,6 +33,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 | `config.py`    | Constantes del juego.                                   |
 | `player.py`    | Clase `Player`: movimiento (flechas / WASD) y dibujado. |
 | `obstacle.py`  | Clase `Obstacle`: creación aleatoria, caída y dibujado. |
+| `powerup.py`   | Clase `PowerUp`: objetos especiales y sus efectos.      |
 
 ## Requisitos e instalación
 
@@ -174,3 +176,23 @@ Cada jugador empieza con **3 vidas**. Un impacto le quita una vida en lugar de t
 - En `main.py`, solo los jugadores vivos se mueven, se dibujan y pueden chocar. El marcador muestra `P1 Lives` / `P2 Lives` en el color de cada jugador.
 - **Reloj de juego (`game_time`)**: se sustituye `pygame.time.get_ticks()` por un contador propio que suma el `dt` de `clock.tick(FPS)` **solo mientras se está jugando**. Así la invulnerabilidad, la aparición de obstáculos y el tiempo de supervivencia se detienen solos en pausa, menú y Game Over, y ya no hace falta desplazar cada temporizador al reanudar (simplifica lo hecho en los retos 4 y 6).
 - Al reiniciar con R se restauran las vidas de ambos jugadores.
+
+### Reto 12 — Objetos especiales (power-ups)
+
+Cada 8 segundos de juego cae un objeto especial (un círculo con una letra, para distinguirlo de los obstáculos cuadrados). El primer jugador vivo que lo toca recibe su efecto:
+
+| Objeto | Color    | Efecto                                                          |
+|--------|----------|-----------------------------------------------------------------|
+| **S**  | Amarillo | +4 de velocidad durante 5 s.                                    |
+| **L**  | Verde    | Recupera una vida (máximo 5).                                   |
+| **I**  | Lila     | Escudo: invulnerable durante 5 s (contorno blanco alrededor).   |
+
+- Nueva clase `PowerUp` en el archivo independiente `powerup.py`, con `move()`, `is_off_screen()`, `draw()` y `apply(player, now)`, que aplica el efecto según su tipo (`SPEED`, `LIFE` o `SHIELD`, elegido al azar).
+- Nuevas constantes en `config.py`: `POWERUP_SPAWN_DELAY`, `POWERUP_SIZE`, `POWERUP_FALL_SPEED`, `POWERUP_DURATION`, `SPEED_BOOST_AMOUNT` y `PLAYER_MAX_LIVES`.
+- Cambios en `Player`:
+  - `current_speed()` = velocidad base + `speed_boost`; el movimiento usa ahora esta velocidad.
+  - `activate_speed_boost(now)`, `activate_shield(now)`, `add_life()` y `reset_effects()`.
+  - `is_invulnerable(now)` también tiene en cuenta el escudo (`has_shield(now)`).
+- **Los efectos temporales desaparecen solos**: cada fotograma se llama a `update_effects(game_time)`, que elimina el aumento de velocidad cuando pasa su duración; el escudo se compara directamente con `shield_until`. Como usan `game_time`, el tiempo de los efectos no corre durante la pausa.
+- El marcador muestra junto a las vidas los segundos que quedan de cada efecto (`SPEED 3s`, `SHIELD 2s`), y `Speed:` muestra la velocidad real incluyendo el aumento.
+- Al reiniciar se eliminan los power-ups de la pantalla y los efectos de los jugadores.

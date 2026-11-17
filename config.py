@@ -12,6 +12,14 @@ PLAYER_SPEED_STEP = 1  # Speed change per key press
 PLAYER_LIVES = 3  # Lives each player starts with
 INVULNERABILITY_TIME = 2000  # Milliseconds of invulnerability after being hit
 BLINK_INTERVAL = 100  # Milliseconds between blinks while invulnerable
+PLAYER_MAX_LIVES = 5  # Lives can never go above this value with power-ups
+
+# Power-ups
+POWERUP_SPAWN_DELAY = 8000  # Milliseconds of game time between power-ups
+POWERUP_SIZE = 30  # Diameter of the power-up in pixels
+POWERUP_FALL_SPEED = 3  # Pixels per frame
+POWERUP_DURATION = 5000  # Milliseconds that temporary effects (speed, shield) last
+SPEED_BOOST_AMOUNT = 4  # Extra speed given by the speed power-up
 
 OBSTACLE_MIN_SIZE = 20  # Minimum obstacle size in pixels
 OBSTACLE_MAX_SIZE = 70  # Maximum obstacle size in pixels

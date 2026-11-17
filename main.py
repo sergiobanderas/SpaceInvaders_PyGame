@@ -2,6 +2,7 @@ import pygame
 from config import *
 from player import Player
 from obstacle import Obstacle
+from powerup import PowerUp
 
 # Initialize Pygame
 pygame.init()
@@ -18,11 +19,13 @@ num_players = 1  # Number of players chosen in the selection screen (1 or 2)
 active_players = []  # Players taking part in the current game
 
 obstacles = [] # List to store obstacles
+powerups = []  # List to store the power-ups falling on screen
 
 # Game clock: milliseconds of real play. It only advances while the game is running,
 # so pauses, menus and the game over screen never count towards any timer.
 game_time = 0
 last_obstacle_spawn_time = 0  # Game time when the last obstacle was spawned
+last_powerup_spawn_time = 0  # Game time when the last power-up was spawned
 
 score = 0  # Initialize the score
 high_score = 0  # Best score reached while the program is running (kept across restarts)
@@ -32,6 +35,7 @@ paused = False  # Initialize the pause state
 survival_time = 0  # Seconds the players have survived
 
 font = pygame.font.Font(None, 36)
+small_font = pygame.font.Font(None, 26)  # Used for the power-up letters and effect timers
 
 # GAME LOOP
 running = True
@@ -51,6 +55,7 @@ while running:
                 # Start the game clock from zero when the game really begins
                 game_time = 0
                 last_obstacle_spawn_time = 0
+                last_powerup_spawn_time = 0
         # Toggle pause with ESC (only while the game is still running)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and not game_over:
             paused = not paused
@@ -64,9 +69,11 @@ while running:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and game_over:
             score = 0
             obstacles = []
+            powerups = []
             for each_player in (player, player2):
                 each_player.reset_position()
                 each_player.reset_lives()
+                each_player.reset_effects()
             player.reset_speed()
             survival_time = 0
             game_over = False
@@ -87,8 +94,32 @@ while running:
             obstacles.append(Obstacle())
             last_obstacle_spawn_time = game_time
 
+        # POWER-UPS spawning logic
+        if game_time - last_powerup_spawn_time > POWERUP_SPAWN_DELAY:
+            powerups.append(PowerUp())
+            last_powerup_spawn_time = game_time
+
         # Players that still have lives left
         alive_players = [p for p in active_players if p.is_alive()]
+
+        # Remove temporary effects that have expired
+        for alive_player in alive_players:
+            alive_player.update_effects(game_time)
+
+        # Move the power-ups and give their effect to the first player that touches them
+        remaining_powerups = []
+        for powerup in powerups:
+            powerup.move()
+            collector = None
+            for alive_player in alive_players:
+                if alive_player.rect.colliderect(powerup.rect):
+                    collector = alive_player
+                    break
+            if collector:
+                powerup.apply(collector, game_time)
+            elif not powerup.is_off_screen():
+                remaining_powerups.append(powerup)
+        powerups = remaining_powerups
 
         # Update the position of each obstacle
         for obstacle in obstacles:
@@ -137,6 +168,9 @@ while running:
     for obstacle in obstacles:
         obstacle.draw(screen)  # Draw each obstacle
 
+    for powerup in powerups:
+        powerup.draw(screen, small_font)  # Draw each power-up
+
     # Display the score
 
     score_text = font.render(f"Score: {score}    High Score: {high_score}", True, (255, 255, 255))
@@ -147,7 +181,7 @@ while running:
     screen.blit(time_text, (10, 40))
 
     # Display player 1 speed
-    speed_text = font.render(f"Speed: {player.speed}", True, (255, 255, 255))
+    speed_text = font.render(f"Speed: {player.current_speed()}", True, (255, 255, 255))
     screen.blit(speed_text, (10, 70))
 
     # Display the lives of each active player, in the player's color
@@ -155,6 +189,15 @@ while running:
     for index, active_player in enumerate(active_players, start=1):
         lives_text = font.render(f"P{index} Lives: {active_player.lives}", True, active_player.color)
         screen.blit(lives_text, (10, lives_y))
+        # Show the remaining seconds of each active temporary effect next to the lives
+        effects = []
+        if active_player.speed_boost:
+            effects.append(f"SPEED {(active_player.speed_boost_until - game_time) // 1000 + 1}s")
+        if active_player.has_shield(game_time):
+            effects.append(f"SHIELD {(active_player.shield_until - game_time) // 1000 + 1}s")
+        if effects:
+            effects_text = small_font.render("  ".join(effects), True, active_player.color)
+            screen.blit(effects_text, (lives_text.get_width() + 25, lives_y + 4))
         lives_y += 30
 
     # Display the game over message if the game is over

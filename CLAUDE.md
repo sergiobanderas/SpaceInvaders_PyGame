@@ -12,6 +12,7 @@ Juego en Python con Pygame. Punto de entrada: `main.py`.
 - `config.py`: constantes del juego (tamaño de ventana, FPS, colores, velocidades).
 - `player.py`: clase `Player` (movimiento con flechas o WASD y dibujado).
 - `obstacle.py`: clase `Obstacle` (aparición aleatoria, caída y dibujado).
+- `powerup.py`: clase `PowerUp` (objetos especiales: velocidad, vida y escudo).
 
 ## Ejecución
 

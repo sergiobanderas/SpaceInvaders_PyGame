@@ -89,7 +89,7 @@ Al pulsar **ESC** el juego se detiene y aparece el mensaje **PAUSE** en el centr
 
 ### Reto 5 — Reiniciar la partida
 
-Cuando aparece **Game Over**, se muestra el aviso *Press R to restart*. Al pulsar **R** empieza una nueva partida sin cerrar el programa.
+Cuando aparece **Game Over**, se muestra el aviso *Press R to restart*. Al pulsar **R** empieza una nueva partida sin cerrar el programa (desde el Reto 10, pasando antes por la pantalla de selección de jugadores).
 
 - `Player` guarda su posición inicial en `self.start_position` y tiene un nuevo método `reset_position()` que la restaura con `self.rect.topleft = self.start_position`.
 - En `main.py`, el evento `KEYDOWN` con `pygame.K_r` (solo si `game_over` es verdadero):
@@ -159,4 +159,4 @@ Al arrancar, el juego muestra la pantalla *Number of players? — Press 1 or 2*.
 - Al elegir, se ponen en marcha los temporizadores de aparición y de supervivencia, para que el tiempo pasado en el menú no cuente.
 - Las colisiones, el dibujado y el reinicio recorren `active_players`, y `player2.moveWASD()` solo se llama si hay dos jugadores. Así, en modo de un jugador, el jugador 2 ni se ve ni puede chocar.
 - La pantalla de selección hace `continue` tras dibujarse, de modo que no se muestra el HUD hasta que empieza la partida.
-- Al reiniciar con R se mantiene el número de jugadores elegido.
+- Al reiniciar con R se vuelve a la pantalla de selección, de modo que se puede cambiar el número de jugadores en cada partida.

@@ -65,17 +65,16 @@ while running:
                 player.change_speed(PLAYER_SPEED_STEP)
             elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS) or event.unicode == "-":
                 player.change_speed(-PLAYER_SPEED_STEP)
-        # Restart the game with R after a game over
+        # Restart with R after a game over: reset everything and go back to the player count selection screen
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_r and game_over:
             score = 0
             obstacles = []
-            for active_player in active_players:
-                active_player.reset_position()
+            player.reset_position()
+            player2.reset_position()
             player.reset_speed()
-            last_obstacle_spawn_time = pygame.time.get_ticks()
-            game_start_time = pygame.time.get_ticks()
             survival_time = 0
             game_over = False
+            selecting_players = True  # Timers restart when the new player count is chosen
 
     if not selecting_players and not game_over and not paused:
         #OBSTACLES spawning logic

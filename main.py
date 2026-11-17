@@ -18,6 +18,7 @@ obstacles = [] # List to store obstacles
 last_obstacle_spawn_time = pygame.time.get_ticks()  # Track the last time an obstacle was spawned
 
 score = 0  # Initialize the score
+high_score = 0  # Best score reached while the program is running (kept across restarts)
 game_over = False  # Initialize the game over state
 paused = False  # Initialize the pause state
 pause_start_time = 0  # Time when the current pause started
@@ -92,6 +93,7 @@ while running:
                 visible_obstacles.append(obstacle)
             else :
                 score += 1  # Increment the score for each obstacle that goes off screen
+                high_score = max(high_score, score)  # Update the record if it was beaten
         obstacles = visible_obstacles
 
 
@@ -108,7 +110,7 @@ while running:
 
     # Display the score
     
-    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+    score_text = font.render(f"Score: {score}    High Score: {high_score}", True, (255, 255, 255))
     screen.blit(score_text, (10, 10))
 
     # Display the survival time

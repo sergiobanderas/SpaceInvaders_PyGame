@@ -17,6 +17,7 @@ Juego arcade 2D desarrollado en Python con [Pygame](https://www.pygame.org/). Ac
 - **Tiempo de supervivencia** en segundos, que se congela en pausa y en Game Over.
 - **Dificultad progresiva**: cada 10 puntos los obstáculos aparecen 50 ms antes (mínimo 150 ms).
 - **Velocidad ajustable** del jugador 1 con + y − (entre 2 y 12).
+- **Récord de puntuación** (*High Score*) que se conserva entre partidas mientras el programa esté abierto.
 - **Game Over** cuando cualquiera de los dos jugadores choca con un obstáculo.
 - **Reinicio** de la partida con la tecla R tras el Game Over.
 - Configuración centralizada en `config.py` (tamaño, FPS, colores, velocidades, frecuencia de aparición).
@@ -134,3 +135,12 @@ El jugador 1 aumenta su velocidad con **+** y la reduce con **−**, siempre ent
 - Se aceptan `K_PLUS`/`K_MINUS`, las teclas del teclado numérico (`K_KP_PLUS`/`K_KP_MINUS`) y también el carácter escrito (`event.unicode`), para que funcione con distintas distribuciones de teclado.
 - Solo se puede cambiar mientras se juega (no en pausa ni en Game Over).
 - Al reiniciar con R, `Player.reset_speed()` devuelve al jugador su velocidad inicial.
+
+### Reto 9 — Récord de puntuación
+
+Junto a la puntuación actual se muestra el récord: `Score: N    High Score: M`.
+
+- Nueva variable `high_score` en `main.py`, inicializada a cero al arrancar el programa.
+- Cada vez que la puntuación sube, se actualiza con `high_score = max(high_score, score)`.
+- El reinicio con R pone `score` a cero pero **no** toca `high_score`, así que el récord se conserva entre partidas.
+- El récord vive en memoria: se pierde al cerrar el programa.

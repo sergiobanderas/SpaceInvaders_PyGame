@@ -232,3 +232,13 @@ Las naves de los jugadores dejan de ser cuadrados de color y pasan a dibujarse c
   - El constructor recibe el parámetro `image_name` y el `rect` toma el tamaño de la imagen con `get_rect()`, así las colisiones se ajustan a la nave.
   - `draw()` usa `surface.blit()` en lugar de `pygame.draw.rect()`. El parpadeo de invulnerabilidad y el contorno del escudo funcionan igual que antes.
   - El color del jugador se mantiene para el marcador.
+
+### Reto 15 — Meteoritos
+
+Los obstáculos dejan de ser cuadrados de colores y pasan a ser meteoritos. Los gráficos son del paquete **Space Shooter Remastered de Kenney** (licencia CC0).
+
+- Nueva constante `METEOR_IMAGES` en `config.py` con 6 meteoritos grandes (3 marrones y 3 grises). Sustituye a `OBSTACLES_COLORS`, que ya no se usa.
+- Cambios en `Obstacle`:
+  - Cada obstáculo elige un meteorito al azar con `random.choice()` y lo carga con `load_image()` (Reto 14), usando el tamaño aleatorio entre `OBSTACLE_MIN_SIZE` y `OBSTACLE_MAX_SIZE` como ancho. Gracias a la caché, cada combinación de imagen y tamaño solo se escala una vez.
+  - El `rect` toma el tamaño de la imagen y se coloca justo encima de la pantalla con `bottomleft=(x, 0)`; la posición `x` se calcula con el ancho real de la imagen para que no se salga por la derecha.
+  - `draw()` usa `surface.blit()` para dibujar la imagen.

@@ -29,7 +29,11 @@ SPEED_BOOST_AMOUNT = 4  # Extra speed given by the speed power-up
 OBSTACLE_MIN_SIZE = 20  # Minimum obstacle size in pixels
 OBSTACLE_MAX_SIZE = 70  # Maximum obstacle size in pixels
 
-OBSTACLES_COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
+# Meteor sprites: each obstacle picks one at random
+METEOR_IMAGES = [
+    "meteorBrown_big1.png", "meteorBrown_big2.png", "meteorBrown_big3.png",
+    "meteorGrey_big1.png", "meteorGrey_big2.png", "meteorGrey_big3.png",
+]
 
 SPAWN_OBSTACLE_DELAY = 500 #milliseconds
 

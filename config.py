@@ -21,10 +21,13 @@ PLAYER_WIDTH = 60  # Width in pixels; the height keeps the image proportions
 
 # Power-ups
 POWERUP_SPAWN_DELAY = 8000  # Milliseconds of game time between power-ups
-POWERUP_SIZE = 30  # Diameter of the power-up in pixels
+POWERUP_SIZE = 30  # Width of the power-up in pixels
 POWERUP_FALL_SPEED = 3  # Pixels per frame
 POWERUP_DURATION = 5000  # Milliseconds that temporary effects (speed, shield) last
 SPEED_BOOST_AMOUNT = 4  # Extra speed given by the speed power-up
+SPEED_POWERUP_IMAGE = "powerupYellow_bolt.png"  # Image of the speed power-up
+LIFE_POWERUP_IMAGE = "pill_green.png"  # Image of the extra life power-up
+SHIELD_POWERUP_IMAGE = "powerupBlue_shield.png"  # Image of the shield power-up
 
 OBSTACLE_MIN_SIZE = 20  # Minimum obstacle size in pixels
 OBSTACLE_MAX_SIZE = 70  # Maximum obstacle size in pixels

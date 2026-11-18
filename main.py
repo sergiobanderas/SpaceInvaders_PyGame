@@ -39,7 +39,7 @@ player_name = ""  # Name being typed
 survival_time = 0  # Seconds the players have survived
 
 font = pygame.font.Font(None, 36)
-small_font = pygame.font.Font(None, 26)  # Used for the power-up letters and effect timers
+small_font = pygame.font.Font(None, 26)  # Used for the ranking and effect timers
 
 # GAME LOOP
 running = True
@@ -197,7 +197,7 @@ while running:
         obstacle.draw(screen)  # Draw each obstacle
 
     for powerup in powerups:
-        powerup.draw(screen, small_font)  # Draw each power-up
+        powerup.draw(screen)  # Draw each power-up
 
     # Display the score
 

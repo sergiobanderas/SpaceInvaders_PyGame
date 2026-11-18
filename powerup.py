@@ -2,6 +2,7 @@ import pygame
 import random
 
 from config import *
+from assets import load_image
 
 
 class PowerUp:
@@ -11,18 +12,18 @@ class PowerUp:
     LIFE = "life"      # Recover one life
     SHIELD = "shield"  # Temporary invulnerability
 
-    # Color and letter shown for each kind of power-up
-    STYLES = {
-        SPEED: ((255, 215, 0), "S"),
-        LIFE: ((0, 220, 90), "L"),
-        SHIELD: ((180, 180, 255), "I"),
+    # Image shown for each kind of power-up
+    IMAGES = {
+        SPEED: SPEED_POWERUP_IMAGE,
+        LIFE: LIFE_POWERUP_IMAGE,
+        SHIELD: SHIELD_POWERUP_IMAGE,
     }
 
     def __init__(self):
-        self.kind = random.choice(list(self.STYLES))  # Random effect
-        self.color, self.letter = self.STYLES[self.kind]
-        x = random.randint(0, WIDTH - POWERUP_SIZE)
-        self.rect = pygame.Rect(x, -POWERUP_SIZE, POWERUP_SIZE, POWERUP_SIZE)
+        self.kind = random.choice(list(self.IMAGES))  # Random effect
+        self.image = load_image(self.IMAGES[self.kind], POWERUP_SIZE)
+        x = random.randint(0, WIDTH - self.image.get_width())
+        self.rect = self.image.get_rect(bottomleft=(x, 0))  # Start just above the screen
         self.speed = POWERUP_FALL_SPEED
 
     def move(self):
@@ -42,8 +43,6 @@ class PowerUp:
         elif self.kind == self.SHIELD:
             player.activate_shield(now)
 
-    def draw(self, surface, font):
-        """Draw the power-up as a circle with its letter, so it looks different from the square obstacles"""
-        pygame.draw.circle(surface, self.color, self.rect.center, POWERUP_SIZE // 2)
-        letter_text = font.render(self.letter, True, (0, 0, 0))
-        surface.blit(letter_text, letter_text.get_rect(center=self.rect.center))
+    def draw(self, surface):
+        """Draw the power-up image on the given surface"""
+        surface.blit(self.image, self.rect)

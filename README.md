@@ -242,3 +242,20 @@ Los obstáculos dejan de ser cuadrados de colores y pasan a ser meteoritos. Los 
   - Cada obstáculo elige un meteorito al azar con `random.choice()` y lo carga con `load_image()` (Reto 14), usando el tamaño aleatorio entre `OBSTACLE_MIN_SIZE` y `OBSTACLE_MAX_SIZE` como ancho. Gracias a la caché, cada combinación de imagen y tamaño solo se escala una vez.
   - El `rect` toma el tamaño de la imagen y se coloca justo encima de la pantalla con `bottomleft=(x, 0)`; la posición `x` se calcula con el ancho real de la imagen para que no se salga por la derecha.
   - `draw()` usa `surface.blit()` para dibujar la imagen.
+
+### Reto 16 — Iconos de los power-ups
+
+Los power-ups dejan de dibujarse como círculos con una letra y pasan a mostrar un icono de su efecto. Los gráficos son del paquete **Space Shooter Remastered de Kenney** (licencia CC0).
+
+| Objeto  | Imagen                   | Efecto                         |
+|---------|--------------------------|--------------------------------|
+| Speed   | `powerupYellow_bolt.png` | +4 de velocidad durante 5 s.   |
+| Life    | `pill_green.png`         | Recupera una vida (máximo 5).  |
+| Shield  | `powerupBlue_shield.png` | Escudo durante 5 s.            |
+
+- Nuevas constantes en `config.py`: `SPEED_POWERUP_IMAGE`, `LIFE_POWERUP_IMAGE` y `SHIELD_POWERUP_IMAGE`. `POWERUP_SIZE` pasa a ser el ancho del icono (antes era el diámetro del círculo).
+- Cambios en `PowerUp`:
+  - El diccionario `STYLES` (color y letra) se sustituye por `IMAGES`, que asocia cada tipo con su imagen. El tipo se sigue eligiendo al azar entre sus claves.
+  - La imagen se carga con `load_image()` (Reto 14) y el `rect` toma su tamaño, colocándose justo encima de la pantalla como los meteoritos.
+  - `draw(surface)` usa `surface.blit()` y ya no necesita recibir una fuente.
+- En `main.py` se llama a `powerup.draw(screen)` sin la fuente; `small_font` se sigue usando para el ranking y los temporizadores de los efectos.

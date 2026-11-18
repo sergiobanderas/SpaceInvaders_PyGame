@@ -14,6 +14,11 @@ INVULNERABILITY_TIME = 2000  # Milliseconds of invulnerability after being hit
 BLINK_INTERVAL = 100  # Milliseconds between blinks while invulnerable
 PLAYER_MAX_LIVES = 5  # Lives can never go above this value with power-ups
 
+# Player sprites (Kenney Space Shooter Remastered, inside the assets folder)
+PLAYER_IMAGE = "playerShip1_blue.png"  # Player 1 ship
+PLAYER2_IMAGE = "playerShip1_orange.png"  # Player 2 ship
+PLAYER_WIDTH = 60  # Width in pixels; the height keeps the image proportions
+
 # Power-ups
 POWERUP_SPAWN_DELAY = 8000  # Milliseconds of game time between power-ups
 POWERUP_SIZE = 30  # Diameter of the power-up in pixels

@@ -217,3 +217,18 @@ Los récords se guardan en el archivo `scores.txt`. Al terminar cada partida se 
 - Al iniciar el juego se lee el fichero y la pantalla de selección de jugadores muestra el **TOP 5**. Tras guardar se vuelve a leer, así que la nueva puntuación aparece en el ranking al volver a esa pantalla.
 - El **High Score** del Reto 9 se inicializa ahora con la mejor puntuación del fichero, de modo que se conserva también entre ejecuciones.
 - `scores.txt` se añade a `.gitignore`, ya que son datos locales de cada equipo.
+
+### Reto 14 — Sprite del jugador
+
+Las naves de los jugadores dejan de ser cuadrados de color y pasan a dibujarse con imágenes. Los gráficos son del paquete **Space Shooter Remastered de Kenney** (licencia CC0, ver `assets/license.txt`), que se añade al repositorio en la carpeta `assets/`.
+
+- Nuevo módulo `assets.py`:
+  - `find_asset(name)` busca un archivo por su nombre en `assets/` y todas sus subcarpetas con `os.walk()`, así en `config.py` basta con poner el nombre del archivo.
+  - `load_image(name, width)` carga la imagen con `convert_alpha()` (para mantener la transparencia) y, si se indica `width`, la escala con `smoothscale` conservando sus proporciones.
+  - Las imágenes cargadas se guardan en una caché, de modo que cada archivo se lee del disco una sola vez.
+  - La ruta de `assets/` se calcula a partir de la carpeta de `assets.py`, así se encuentra aunque el juego se lance desde otra carpeta.
+- Nuevas constantes en `config.py`: `PLAYER_IMAGE` (nave azul del jugador 1), `PLAYER2_IMAGE` (nave naranja del jugador 2) y `PLAYER_WIDTH` (60 px de ancho).
+- Cambios en `Player`:
+  - El constructor recibe el parámetro `image_name` y el `rect` toma el tamaño de la imagen con `get_rect()`, así las colisiones se ajustan a la nave.
+  - `draw()` usa `surface.blit()` en lugar de `pygame.draw.rect()`. El parpadeo de invulnerabilidad y el contorno del escudo funcionan igual que antes.
+  - El color del jugador se mantiene para el marcador.

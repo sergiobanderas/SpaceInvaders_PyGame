@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 
 # Create a player object
 player = Player(375, 530)
-player2 = Player(100, 100, PLAYER_COLOR2,2)  # Create a second player object
+player2 = Player(100, 100, PLAYER_COLOR2, 2, PLAYER2_IMAGE)  # Create a second player object
 
 selecting_players = True  # The game starts on the player count selection screen
 num_players = 1  # Number of players chosen in the selection screen (1 or 2)
